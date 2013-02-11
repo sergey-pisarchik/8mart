@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Startublo 3d</title>
+		<link rel="image_src" href="https://planner5d.com/startublo/i/preview.jpg" />
+		<script src="js/three.min.js"></script>
+		<script src="js/three.loader.p5d.js"></script>
+		<script src="js/md2character.js"></script>
+		<script src="js/bood.js"></script>
+		<script src="js/bood.player.js"></script>
+		<script src="js/bood.killer.js"></script>
+		<script src="js/bood.bullet.js"></script>
+		<style>
+			* {
+				-webkit-touch-callout: none;
+				-webkit-user-select: none;
+				-moz-user-select: none;
+				-ms-user-select: none;
+				touch-callout: none;
+				user-select: none;
+			}
+			html, body {
+				margin: 0;
+				padding: 0;
+				height: 100%;
+				width: 100%;
+				overflow: hidden;
+				background-color: #000;
+			}
+			#wrap {
+				position: absolute;
+				display: none;
+				cursor: default;
+			}
+			#bg, #gameover {
+				position: absolute;
+				z-index: 3;
+				top: 0;
+				left: 0;
+				bottom: 0;
+				right: 0;
+				background: #000 url(i/background.jpg) no-repeat center center;
+			}
+			#gameover {
+				display: none;
+				background: #000 url(i/game_over.jpg) no-repeat center center;
+			}
+			#loadingTitle {
+				z-index: 4;
+				position: absolute;
+				margin-top: 100px;
+				margin-left: -40px;
+				width: 80px;
+				height: 40px;
+				top: 50%;
+				left: 50%;
+				background: url(i/loading.png) center top no-repeat;
+			}
+			#startBtn, #continueBtn, #restartBtn {
+				display: none;
+				z-index: 10;
+				position: absolute;
+				margin-top: 60px;
+				margin-left: -65px;
+				top: 50%;
+				left: 50%;
+				width: 129px;
+				height: 69px;
+				background: url(i/start.png);
+				cursor: pointer;
+				-webkit-transition: all 1s ease-in;
+			}
+			#startBtn:hover, #continueBtn:hover, #restartBtn:hover {
+				-webkit-filter: hue-rotate(180deg);
+			}
+			#continueBtn {
+				margin-left: -100px;
+				width: 199px;
+				height: 70px;
+				background: url(i/continue.png);
+			}
+			#restartBtn {
+				display: block;
+				width: 195px;
+				margin-top: 0;
+				margin-left: -92px;
+				background: url(i/restart.png);
+			}
+			#health, #frags {
+				position: absolute;
+				z-index: 1;
+				top: 10px;
+				left: 10px;
+				height: 50px;
+				padding-left: 50px;
+				background: url(i/health.png) no-repeat left center;
+				font-family: Arial, Helvetica;
+				font-weight: bold;
+				font-size: 40px;
+				line-height: 50px;
+				color: green;
+			}
+			#frags {
+				left: 160px;
+				background: url(i/skull.png) no-repeat left center;
+				color: red;
+			}
+			#blood {
+				position: absolute;
+				z-index: 2;
+				top: 0;
+				left: 0;
+				bottom: 0;
+				right: 0;
+				background-color: red;
+				opacity: 0;
+				-ms-transition: all 0.2s ease-in;
+				-moz-transition: all 0.2s ease-in;
+				-webkit-transition: all 0.2s ease-in;
+				-o-transition: all 0.2s ease-in;
+				transition: all 0.2s ease-in;
+			}
+			a.home, a.fb, a.share {
+				display: block;
+				z-index: 10;
+				position: absolute;
+				margin-top: 195px;
+				margin-left: 165px;
+				top: 50%;
+				left: 50%;
+				width: 320px;
+				height: 69px;/*
+				background: #ddd;
+				opacity: 0.6;*/
+			}
+			a.fb {
+				margin-left: -30px;
+				width: 130px;
+			}
+			a.share {
+				margin-top: 105px;
+				margin-left: -90px;
+				width: 180px;
+			}
+		</style>
+	</head>
+	<body onload="bood.init()">
+		<div id="wrap">
+			<div id="health"></div>
+			<div id="frags">0</div>
+			<div id="blood"></div>
+		</div>
+		<div id="bg">
+			<a class="home" href="https://planner5d.com/"></a>
+			<a class="fb" href="https://www.facebook.com/dialog/feed?app_id=296485337028608&link=https://planner5d.com/startublo/&picture=https://planner5d.com/startublo/i/preview.jpg&name=Startublo 3d&description=let zombies kill your office hours&redirect_uri=https://planner5d.com/startublo/"></a>
+		</div>
+		<div id="gameover">
+			<div id="restartBtn"></div>
+			<a class="share" href="https://www.facebook.com/dialog/feed?app_id=296485337028608&link=https://planner5d.com/startublo/&picture=https://planner5d.com/startublo/i/preview.jpg&name=Startublo 3d&description=let zombies kill your office hours&redirect_uri=https://planner5d.com/startublo/"></a>
+		</div>
+		<div id="loadingTitle"></div>
+		<div id="startBtn"></div>
+		<div id="continueBtn"></div>
+		<script>
+		// ga
+		window._gaq = window._gaq || [];
+		_gaq.push(['_setAccount', 'UA-29884421-1']);
+		_gaq.push(['_setDomainName', 'planner5d.com']);
+		_gaq.push(['_trackPageview']);
+		if(location.protocol == 'https:') {
+			(function() {
+				var ga = document.createElement('script');
+				ga.type = 'text/javascript';
+				ga.async = true;
+				ga.src = 'https://ssl.google-analytics.com/ga.js';
+				var s = document.getElementsByTagName('script')[0];
+				s.parentNode.insertBefore(ga, s);
+			})();
+		}
+		</script>
+	</body>
+</html>
